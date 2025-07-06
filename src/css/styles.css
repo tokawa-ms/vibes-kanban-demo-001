@@ -1,0 +1,224 @@
+/* Custom styles for the Kanban Task Management App */
+
+/* Drag and drop styles */
+.task-card {
+    transition: all 0.3s ease;
+    cursor: grab;
+}
+
+.task-card:active {
+    cursor: grabbing;
+}
+
+.task-card.dragging {
+    transform: rotate(5deg);
+    opacity: 0.8;
+    z-index: 1000;
+}
+
+.drag-over {
+    background-color: #f3f4f6;
+    border: 2px dashed #9ca3af;
+}
+
+/* Priority indicators */
+.priority-high {
+    border-left: 4px solid #ef4444;
+}
+
+.priority-medium {
+    border-left: 4px solid #f59e0b;
+}
+
+.priority-low {
+    border-left: 4px solid #10b981;
+}
+
+/* Animation classes */
+.task-complete {
+    animation: taskComplete 0.6s ease-in-out;
+}
+
+@keyframes taskComplete {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+        background-color: #dcfce7;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.task-archive {
+    animation: taskArchive 0.5s ease-in-out forwards;
+}
+
+@keyframes taskArchive {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+.task-restore {
+    animation: taskRestore 0.5s ease-in-out;
+}
+
+@keyframes taskRestore {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Task card hover effects */
+.task-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+/* Smooth transitions for all interactive elements */
+.task-card,
+.task-card button,
+.kanban-column {
+    transition: all 0.2s ease;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .task-card {
+        margin-bottom: 0.75rem;
+    }
+    
+    .kanban-column {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Modal animations */
+.modal-enter {
+    animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-exit {
+    animation: modalExit 0.2s ease-in forwards;
+}
+
+@keyframes modalExit {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+/* Archive section animations */
+.archive-toggle {
+    transition: transform 0.3s ease;
+}
+
+.archive-toggle.open {
+    transform: rotate(180deg);
+}
+
+/* Search highlight */
+.search-highlight {
+    background-color: #fef3c7;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Custom scrollbar for task containers */
+.task-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.task-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.task-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.task-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Empty state styles */
+.empty-state {
+    opacity: 0.6;
+    text-align: center;
+    padding: 2rem 1rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #3b82f6;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Status indicator animations */
+.status-indicator {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Accessibility improvements */
+.task-card:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
