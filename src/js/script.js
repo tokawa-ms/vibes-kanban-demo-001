@@ -10,7 +10,82 @@ class KanbanApp {
         this.statusFilter = 'all';
         this.sortBy = 'updatedAt';
         
+        // Initialize sound context for audio effects
+        this.audioContext = null;
+        this.initAudioContext();
+        
         this.init();
+    }
+
+    // Audio effects initialization
+    initAudioContext() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn('Web Audio API not supported:', e);
+        }
+    }
+
+    // Ensure audio context is resumed (required for user interaction)
+    ensureAudioContext() {
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume();
+        }
+    }
+
+    // Create sound effects using Web Audio API
+    playProgressSound() {
+        if (!this.audioContext) return;
+        this.ensureAudioContext();
+        
+        // Create an uplifting, motivating sound (rising tone)
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        // Rising frequency for motivation
+        oscillator.frequency.setValueAtTime(440, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(880, this.audioContext.currentTime + 0.3);
+        
+        // Volume envelope
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.1, this.audioContext.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+        
+        oscillator.type = 'triangle';
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.3);
+    }
+
+    playCompletionSound() {
+        if (!this.audioContext) return;
+        this.ensureAudioContext();
+        
+        // Create a celebratory sound (success chord)
+        const frequencies = [523.25, 659.25, 783.99]; // C, E, G major chord
+        
+        frequencies.forEach((freq, index) => {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+            oscillator.type = 'sine';
+            
+            // Stagger the notes slightly for a richer sound
+            const startTime = this.audioContext.currentTime + (index * 0.05);
+            
+            gainNode.gain.setValueAtTime(0, startTime);
+            gainNode.gain.linearRampToValueAtTime(0.08, startTime + 0.1);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.8);
+            
+            oscillator.start(startTime);
+            oscillator.stop(startTime + 0.8);
+        });
     }
 
     init() {
@@ -507,14 +582,28 @@ class KanbanApp {
             const oldStatus = task.status;
             this.updateTask(taskId, { status: newStatus });
             
-            // Add completion animation if moved to done
-            if (newStatus === 'done' && oldStatus !== 'done') {
-                const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            // Get the task element for animations
+            const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            
+            // Add appropriate effects based on the destination status
+            if (newStatus === 'progress' && oldStatus !== 'progress') {
+                // Moving to "In Progress" - motivating effects
+                this.playProgressSound();
                 if (taskElement) {
-                    taskElement.classList.add('task-complete');
+                    taskElement.classList.add('task-progress');
                     setTimeout(() => {
-                        taskElement.classList.remove('task-complete');
-                    }, 600);
+                        taskElement.classList.remove('task-progress');
+                    }, 500);
+                }
+            } else if (newStatus === 'done' && oldStatus !== 'done') {
+                // Moving to "Done" - celebratory effects
+                this.playCompletionSound();
+                if (taskElement) {
+                    // Use the enhanced celebration animation
+                    taskElement.classList.add('task-celebrate');
+                    setTimeout(() => {
+                        taskElement.classList.remove('task-celebrate');
+                    }, 1200);
                 }
             }
         }
